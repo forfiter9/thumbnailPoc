@@ -1,7 +1,5 @@
 package com.rivian.thumbnailpocbytesarray
 
-import android.app.ActivityManager
-import android.content.Context
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
@@ -21,23 +19,15 @@ class MainActivity : AppCompatActivity() {
         val externalStoragePath = Environment.getExternalStorageDirectory().absolutePath
         val downloadsPath = "$externalStoragePath/Download/"
         val initMp4 = "$externalStoragePath/Download/segment_fileinit.mp4"
-        getAvailableMemory()
-        val extractM4sFilesOnByteLevel = extractM4sFilesOnByteLevel(pathDownload = downloadsPath)
+
+        val extractM4sFilesAsByteArrayList = extractM4sFilesAsByteArrayList(pathDownload = downloadsPath)
         val initMp4InByteArray = fileToBytesArray(File(initMp4))
 
-        val mergedInitWithSegmentsAsByteArrayList = appendSegmentToInitFileOnByteLevel(extractM4sFilesOnByteLevel = extractM4sFilesOnByteLevel, initMp4Bytes = initMp4InByteArray)
+        val mergedInitWithSegmentsAsByteArrayList = appendSegmentToInitFileOnByteLevel(extractM4sFilesOnByteLevel = extractM4sFilesAsByteArrayList, initMp4Bytes = initMp4InByteArray)
         configureRecycler(mergedInitWithSegmentsAsByteArrayList)
-        getAvailableMemory()
     }
 
-    private fun getAvailableMemory(): ActivityManager.MemoryInfo {
-        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        return ActivityManager.MemoryInfo().also { memoryInfo ->
-            activityManager.getMemoryInfo(memoryInfo)
-        }
-    }
-
-    private fun extractM4sFilesOnByteLevel(pathDownload: String): List<ByteArray> {
+    private fun extractM4sFilesAsByteArrayList(pathDownload: String): List<ByteArray> {
         val segmentsOnByteLevelList = mutableListOf<ByteArray>()
         val allFilesInDirectory = File(pathDownload).listFiles()
         allFilesInDirectory?.let {
